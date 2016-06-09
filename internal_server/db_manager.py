@@ -1,4 +1,5 @@
 from sqlite3 import connect
+from datetime import datetime
 
 class DbManager:
 
@@ -24,7 +25,10 @@ class DbManager:
 
     def get_chain_by_table_name(self, table_name):
         blocks = []
-        for row in self.db_conn.execute("SELECT prev_hash, hash, actions, created_at FROM %s" % table_name):
+
+        query = "SELECT prev_hash, hash, actions, created_at FROM %s" % table_name
+        rows = self.db_conn.execute(query)
+        for row in rows:
             blocks.push({prev_hash: row[0], hash: row[1], actions: row[2], created_at: row[3]})
 
         return blocks
@@ -33,7 +37,43 @@ class DbManager:
         return get_chain_by_table_name(self, 'current_chain')
 
     def get_chain_at(self, at):
-        # TODO
-        tablenname = 'current_chain'
+        query = "SELECT id FROM archived_chain_info WHERE started_at < ? AND finished_at => ?"
+        c = self.db_conn.cursor()
+        chain_id = c.execute(query, (at, at)).fetchone()[0]
+
+        table_name = 'chain_' + str(chain_id)
 
         return get_chain_by_table_name(self, table_name)
+
+    def archive_current_chain(self, started_at):
+        c = self.db_conn.cursor()
+
+        chain_id = c.fetchone("SELECT id FROM archived_chain_info ORDER BY id DESC")[0]
+        info = (chain_id, started_at, datetime.now())
+
+        c.execute("ALTER TABLE current_chain RENAME TO ?", "chain%d" % chain_id)
+        c.execute("INSERT INTO archived_chain_info(id, started_at, finished_at) VALUES (?,?,?)", info)
+
+        c.commit()
+        self.create_table_current_chain
+
+    def create_schema(self):
+        self.create_table_current_chain
+        self.create_table_archived_chain_info
+
+    def create_table_current_chain(self):
+        query = 'CREATE TABLE current_chain(prev_hash CHAR(128), hash CHAR(128), actions TEXT, created_at TEXT)'
+        self.send_and_commit(query)
+
+    def create_table_archived_chain_info(self):
+        query = 'CREATE TABLE archived_chain_info(id INT, started_at TEXT, finished_at TEXT)'
+        self.send_and_commit(query)
+
+    def drop_schema(self):
+        c = self.db_conn.cursor()
+        c.executemany("DROP TABLE current_chain; DROP TABLE archived_chain_info;");
+
+    def send_and_commit(self, query):
+        c = self.db_conn.cursor()
+        c.execute(query)
+        c.commit()
