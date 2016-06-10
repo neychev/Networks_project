@@ -1,5 +1,6 @@
 from sqlite3 import connect
 from datetime import datetime
+import json
 
 class DbManager:
 
@@ -17,7 +18,7 @@ class DbManager:
         self.db_conn.close()
 
     def add_block(self, block):
-        record = (block['prev_hash'], block['hash'], block['actions'], block['created_at'])
+        record = (block['prev_hash'], block['hash'], json.dumps(block['actions']), block['created_at'])
         
         c = self.db_conn.cursor()
         c.execute('INSERT INTO current_chain(prev_hash, hash, actions, created_at)', record)
@@ -29,7 +30,8 @@ class DbManager:
         query = "SELECT prev_hash, hash, actions, created_at FROM %s" % table_name
         rows = self.db_conn.execute(query)
         for row in rows:
-            blocks.push({prev_hash: row[0], hash: row[1], actions: row[2], created_at: row[3]})
+            actions = json.loads(row[2])
+            blocks.push({prev_hash: row[0], hash: row[1], actions: actions, created_at: row[3]})
 
         return blocks
 
