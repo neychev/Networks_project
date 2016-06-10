@@ -53,7 +53,7 @@ class DbManager:
         chain_id = c.fetchone("SELECT id FROM archived_chain_info ORDER BY id DESC")[0]
         info = (chain_id, started_at, datetime.now())
 
-        c.execute("ALTER TABLE current_chain RENAME TO ?", "chain%d" % chain_id)
+        c.execute("ALTER TABLE current_chain RENAME TO ?", "chain_%d" % chain_id)
         c.execute("INSERT INTO archived_chain_info(id, started_at, finished_at) VALUES (?,?,?)", info)
 
         c.commit()
