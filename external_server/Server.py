@@ -8,7 +8,7 @@ server = SimpleXMLRPCServer(('', 8000), logRequests=True, allow_none=True)
 server.register_introspection_functions()
 
 history_of_users = []
-error_string = []
+error_string = ['']
 
 class ExampleService:
     
@@ -38,42 +38,6 @@ class ExampleService:
         data = bin.data
         response = Binary(data)
         return response
-
-    def enter(self, client_id, location_id):
-        global history_of_users
-        global error_string
-        element_of_history = {'client_id': client_id, 'location_id': location_id, 'time_in': datetime.datetime.now(), 'time_out': None}
-        a = len(history_of_users)
-        history_of_users.append(element_of_history)
-        flag = (len(history_of_users) - a == 1)
-        if not flag:
-            error_string = 'Failed to add action to history:'+str(client_id)+' entered to location '+str(location_id)
-        return flag
-
-    def exit(self, client_id):
-        global history_of_users
-        global error_string
-        index_of_entering = [i for i, x in enumerate(history_of_users) if x['time_out'] is None and x['client_id'] == client_id]
-        print index_of_entering
-        flag = (len(index_of_entering) == 1)
-        if flag:
-            history_of_users[index_of_entering[0]]['time_out'] = datetime.datetime.now()
-        else:
-            error_string = [datetime.datetime.now(),'Failed to add action to history:'+str(client_id)+' left current location ']
-        return flag
-
-    '''def getDiagnostics(self):
-        global error_string
-        return error_string
-'''
-    def getHistory(self):
-        global history_of_users
-        return history_of_users
-
-    def clearHistory(self):
-        global history_of_users
-        history_of_users = []
-        return
 
 def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
     return ''.join(random.choice(chars) for _ in range(size))
