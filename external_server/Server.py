@@ -1,8 +1,23 @@
 from SimpleXMLRPCServer import SimpleXMLRPCServer
 from xmlrpclib import Binary
+import xmlrpclib
 import datetime
 import string
 import random
+
+
+inner_server = xmlrpclib.ServerProxy('http://192.168.1.106:8000')
+
+def GetChain():
+    return inner_server.GetChain()
+
+def GetChainAt(at):
+    return inner_server.GetChainAt(at)
+
+def addBlock(x):
+    return innet_server.addBlock(x)
+
+
 
 server = SimpleXMLRPCServer(('', 8000), logRequests=True, allow_none=True)
 server.register_introspection_functions()
@@ -161,7 +176,7 @@ def getLocation_function(admin_id, id, at):
         return -1
     return loc_id #if user is not at any location return 0
 
-server.register_function(exit_function, 'Exit')
+server.register_function(getLocation_function, 'Exit')
 
 def createUser_function(admin_id):
     BList = GetChain()
