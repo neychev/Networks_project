@@ -4,7 +4,7 @@ import datetime
 import string
 import random
 
-server = SimpleXMLRPCServer(('localhost', 8000), logRequests=True, allow_none=True)
+server = SimpleXMLRPCServer(('', 8000), logRequests=True, allow_none=True)
 server.register_introspection_functions()
 
 history_of_users = []
@@ -62,10 +62,10 @@ class ExampleService:
             error_string = [datetime.datetime.now(),'Failed to add action to history:'+str(client_id)+' left current location ']
         return flag
 
-    def getDiagnostics(self):
+    '''def getDiagnostics(self):
         global error_string
         return error_string
-
+'''
     def getHistory(self):
         global history_of_users
         return history_of_users
@@ -79,7 +79,7 @@ def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
     return ''.join(random.choice(chars) for _ in range(size))
 
 
-def getDiagnostics_function()
+def getDiagnostics_function():
     return error_string.pop()
 
 server.register_function(getDiagnostics_function, 'getDiagnostics')
@@ -108,10 +108,10 @@ def enter_function(id, location_id):
             x['actions'] = [{'name':'Enter', 'id':id, 'location_id':locaion_id}]
             addBlock(x)
             return True
-    else
-        if (user_found == False)
+    else:
+        if (user_found == False):
             error_string.append('Enter fail: User not found.')
-        if (location_found == False)
+        if (location_found == False):
             error_string.append('Enter fail: Location not found.')
         return False
 
@@ -145,7 +145,7 @@ def exit_function(id):
 server.register_function(exit_function, 'Exit')
 
 
-def checkAdminRights(admin_id, BList)
+def checkAdminRights(admin_id, BList):
     user_found = False
     admin_found = False
     admin_updowncount = 0
@@ -166,7 +166,7 @@ def checkAdminRights(admin_id, BList)
         else:
             error_string.append('Administrator identity fail: This user does not have the superuser rights.')
             return -2       #The user is not admin
-    else
+    else:
         error_string.append('Administrator identity fail: There is no such superuser.')
         return -1           #No such admin user
 
@@ -192,7 +192,7 @@ def getLocation_function(admin_id, id, at):
                     loc_id = action['location_id']
                 if (actiom['name'] == 'Exit' and action['id'] == id and action['created_at'] <= at):
                     loc_id = 0
-    else
+    else:
         error_string.append('Location identification fail: There is no such user.')
         return -1
     return loc_id #if user is not at any location return 0
@@ -202,7 +202,7 @@ server.register_function(exit_function, 'Exit')
 def createUser_function(admin_id):
     BList = GetChain()
     ifadmin = checkAdminRights(admin_id, BList)
-    if (ifadmin == 0)
+    if (ifadmin == 0):
         user_found = True
         while(user_found == True):
             user_found = False
@@ -224,7 +224,7 @@ server.register_function(createUser_function, 'createUser')
 def upgradeUser_function(admin_id, id):
     BList = GetChain()
     ifadmin = checkAdminRights(admin_id, BList)
-    if (ifadmin == 0)
+    if (ifadmin == 0):
         user_found = False
         for block in BList:
             for action in block['actions']:
@@ -238,10 +238,10 @@ def upgradeUser_function(admin_id, id):
                         admin_updowncount+=1
                     if (action['name'] == 'DowngradeUser' and action['id'] == id):
                         admin_updowncount-=1
-            if (user_updowncount == 1)
+            if (user_updowncount == 1):
                 error_string.append('User upgrade fail: The user has already been upgraded.')
                 return False
-            else
+            else:
                 x = {}
                 x['prev_hash'] = BList[-1]['hash']
                 x['actions'] = [{'name':'UpgradeUser', 'id':id}]
@@ -259,7 +259,7 @@ server.register_function(upgradeUser_function, 'upgradeUser')
 def downgradeUser_function(admin_id, id):
     BList = GetChain()
     ifadmin = checkAdminRights(admin_id, BList)
-    if (ifadmin == 0)
+    if (ifadmin == 0):
         user_found = False
         for block in BList:
             for action in block['actions']:
@@ -273,10 +273,10 @@ def downgradeUser_function(admin_id, id):
                         admin_updowncount+=1
                     if (action['name'] == 'DowngradeUser' and action['id'] == id):
                         admin_updowncount-=1
-            if (user_updowncount == 0)
+            if (user_updowncount == 0):
                 error_string.append('User downgrade fail: The user has already been downgraded.')
                 return False
-            else
+            else:
                 x = {}
                 x['prev_hash'] = BList[-1]['hash']
                 x['actions'] = [{'name':'DowngradeUser', 'id':id}]
@@ -295,7 +295,7 @@ def createLocation_function(admin_id):
     BList = GetChain()
     prev_loc_id = 0
     ifadmin = checkAdminRights(admin_id, BList)
-    if (ifadmin == 0)
+    if (ifadmin == 0):
         for block in BList:
             for action in block['actions']:
                 if (action['name'] == 'CreateLocation'):
@@ -304,7 +304,7 @@ def createLocation_function(admin_id):
         x['prev_hash'] = BList[-1]['hash']
         x['actions'] = [{'name':'CreateLocation', 'id':prev_loc_id+1}]
         addBlock(x)
-            return prev_loc_id + 1
+        return prev_loc_id + 1
     else:
         return ifadmin
 
@@ -315,7 +315,7 @@ def getUsers_function(admin_id, location_id, at):
     BList = GetChain()
     UList = []
     ifadmin = checkAdminRights(admin_id, BList)
-    if (ifadmin == 0)
+    if (ifadmin == 0):
         for block in BCList:
             for action in block['actions']:
                 if (action['name'] == 'Enter' and action['location_id'] == location_id and action['created_at'] < at):
