@@ -39,9 +39,9 @@ class DbManager:
         return get_chain_by_table_name(self, 'current_chain')
 
     def get_chain_at(self, at):
-        query = "SELECT id FROM archived_chain_info WHERE started_at < ? AND finished_at => ?"
+        query = "SELECT id FROM archived_chain_info WHERE started_at < ? AND finished_at >= ?"
         c = self.db_conn.cursor()
-        chain_id = c.execute(query, (at, at)).fetchone()[0]
+        result = c.execute(query, (at, at)).fetchone()
 
         table_name = 'chain_' + str(chain_id)
 
@@ -56,12 +56,12 @@ class DbManager:
         c.execute("ALTER TABLE current_chain RENAME TO ?", "chain_%d" % chain_id)
         c.execute("INSERT INTO archived_chain_info(id, started_at, finished_at) VALUES (?,?,?)", info)
 
-        c.commit()
+        self.db_conn.commit()
         self.create_table_current_chain
 
     def create_schema(self):
-        self.create_table_current_chain
-        self.create_table_archived_chain_info
+        self.create_table_current_chain()
+        self.create_table_archived_chain_info()
 
     def create_table_current_chain(self):
         query = 'CREATE TABLE current_chain(prev_hash CHAR(128), hash CHAR(128), actions TEXT, created_at TEXT)'
@@ -73,9 +73,11 @@ class DbManager:
 
     def drop_schema(self):
         c = self.db_conn.cursor()
-        c.executemany("DROP TABLE current_chain; DROP TABLE archived_chain_info;");
+        c.execute("DROP TABLE current_chain")
+        c.execute("DROP TABLE archived_chain_info;")
+        self.db_conn.commit()
 
     def send_and_commit(self, query):
         c = self.db_conn.cursor()
         c.execute(query)
-        c.commit()
+        self.db_conn.commit()
