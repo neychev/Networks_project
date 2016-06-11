@@ -136,9 +136,9 @@ def checkAdminRights(admin_id, BList):
     if user_found == True:
         for block in BList:
             for action in block['actions']:
-                if action['name'] == 'UpgradeUser' and action['id'] == admin_id:
+                if action['name'] == 'UpgradeUser' and action['admin_id'] == admin_id:
                     admin_updowncount+=1
-                if action['name'] == 'DowngradeUser' and action['id'] == admin_id:
+                if action['name'] == 'DowngradeUser' and action['admin_id'] == admin_id:
                     admin_updowncount-=1
         if admin_updowncount == 1:
             admin_found = True
