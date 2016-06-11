@@ -155,6 +155,7 @@ def checkAdminRights(admin_id, BList):
 
 
 def getLocation_function(admin_id, id, at):
+    at = datetime.datetime.strptime(str(at), "%Y%m%dT%H:%M:%S")
     BCList = GetChainAt(at)
     BList = GetChain()
     admin_found = checkAdminRights(admin_id, BList)
@@ -297,6 +298,7 @@ server.register_function(createLocation_function, 'createLocation')
 
 
 def getUsers_function(admin_id, location_id, at):
+    at = datetime.datetime.strptime(str(at), "%Y%m%dT%H:%M:%S")
     BCList = GetChainAt(at)
     BList = GetChain()
     UList = []
