@@ -9,10 +9,10 @@ import random
 inner_server = xmlrpclib.ServerProxy('http://192.168.1.106:8000')
 
 def GetChain():
-    return inner_server.GetChain()
+    return inner_server.getChain()
 
 def GetChainAt(at):
-    return inner_server.GetChainAt(at)
+    return inner_server.getChainAt(at)
 
 def addBlock(x):
     return inner_server.addBlock(x)
@@ -88,6 +88,9 @@ def enter_function(id, location_id):
             x['actions'] = [{'name':'Enter', 'id':id, 'location_id':location_id}]
             addBlock(x)
             return True
+        else:
+            error_string.append('Enter fail: User is already inside some location.')
+            return False
     else:
         if user_found == False:
             error_string.append('Enter fail: User not found.')
@@ -178,7 +181,7 @@ def getLocation_function(admin_id, id, at):
     return loc_id
     #if user is not at any location return 0
 
-server.register_function(getLocation_function, 'Exit')
+server.register_function(getLocation_function, 'getLocation')
 
 def createUser_function(admin_id):
     BList = GetChain()
