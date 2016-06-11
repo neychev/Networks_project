@@ -21,7 +21,7 @@ class DbManager:
         record = (block['prev_hash'], block['hash'], json.dumps(block['actions']), block['created_at'])
         
         c = self.db_conn.cursor()
-        c.execute('INSERT INTO current_chain(prev_hash, hash, actions, created_at)', record)
+        c.execute('INSERT INTO current_chain(prev_hash, hash, actions, created_at) VALUES (?,?,?,?)', record)
         self.db_conn.commit()
 
     def get_chain_by_table_name(self, table_name):
