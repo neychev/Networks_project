@@ -41,7 +41,7 @@ class DbManager:
     def get_chain_at(self, at):
         query = "SELECT id FROM archived_chain_info WHERE started_at < ? AND finished_at >= ?"
         c = self.db_conn.cursor()
-        result = c.execute(query, (at, at)).fetchone()  
+        result = c.execute(query, [str(at), str(at)]).fetchone()
             
         table_name = 'current_chain' if result is None else 'chain_' + str(result[0])
 
