@@ -51,7 +51,8 @@ def add_block_function(block):
 
     block['created_at'] = datetime.now()
     block['actions'] = json.dumps(block['actions'])
-    block['hash'] = sha224(block['actions'] + str(block['created_at'])).hexdigest()
+    info = block['actions'] + str(block['created_at']) + block['prev_hash']
+    block['hash'] = sha224(info).hexdigest()
 
     try:
         db_manager.add_block(block)
