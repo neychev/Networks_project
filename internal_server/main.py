@@ -28,7 +28,7 @@ def get_chain_function():
 server.register_function(get_chain_function, 'getChain')
 
 def get_chain_at_function(at):
-    return db_manager.get_chain_at(at)
+    return db_manager.get_chain_at(datetime.strptime(str(at), "%Y%m%dT%H:%M:%S"))
 server.register_function(get_chain_at_function, 'getChainAt')
 
 def add_block_function(block):
