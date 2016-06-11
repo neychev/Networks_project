@@ -2,6 +2,8 @@ from SimpleXMLRPCServer import SimpleXMLRPCServer
 from SimpleXMLRPCServer import SimpleXMLRPCRequestHandler
 from DbManager import DbManager
 from datetime import datetime
+from hashlib import sha224
+import json
 
 current_ip = None
 errors = {}
@@ -22,7 +24,7 @@ def add_error(ip, error_string):
     errors[ip] = error_string
 
 def get_chain_function():
-    return db_manager.get_chain
+    return db_manager.get_chain()
 server.register_function(get_chain_function, 'getChain')
 
 def get_chain_at_function(at):
@@ -48,10 +50,10 @@ def add_block_function(block):
         return False
 
     block['created_at'] = datetime.now()
-    block['hash'] = '123'
+    block['actions'] = json.dumps(block['actions'])
+    block['hash'] = sha224(block['actions'] + str(block['created_at'])).hexdigest()
 
     try:
-        print block['actions']
         db_manager.add_block(block)
     except Exception as thrown:
         add_error(current_ip, str(thrown))

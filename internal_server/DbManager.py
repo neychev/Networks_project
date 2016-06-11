@@ -18,7 +18,7 @@ class DbManager:
         self.db_conn.close()
 
     def add_block(self, block):
-        record = (block['prev_hash'], block['hash'], json.dumps(block['actions']), block['created_at'])
+        record = (block['prev_hash'], block['hash'], block['actions'], block['created_at'])
         
         c = self.db_conn.cursor()
         c.execute('INSERT INTO current_chain(prev_hash, hash, actions, created_at) VALUES (?,?,?,?)', record)
@@ -31,12 +31,12 @@ class DbManager:
         rows = self.db_conn.execute(query)
         for row in rows:
             actions = json.loads(row[2])
-            blocks.push({prev_hash: row[0], hash: row[1], actions: actions, created_at: row[3]})
+            blocks.append({'prev_hash': row[0], 'hash': row[1], 'actions': actions, 'created_at': row[3]})
 
         return blocks
 
     def get_chain(self):
-        return get_chain_by_table_name(self, 'current_chain')
+        return self.get_chain_by_table_name('current_chain')
 
     def get_chain_at(self, at):
         query = "SELECT id FROM archived_chain_info WHERE started_at < ? AND finished_at >= ?"
