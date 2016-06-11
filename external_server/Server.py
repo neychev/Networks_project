@@ -15,18 +15,18 @@ def GetChainAt(at):
     return inner_server.GetChainAt(at)
 
 def addBlock(x):
-    return innet_server.addBlock(x)
+    return inner_server.addBlock(x)
 
-
-
-server = SimpleXMLRPCServer(('', 8000), logRequests=True, allow_none=True)
+server = SimpleXMLRPCServer(("", 8000), logRequests=True, allow_none=True)
 server.register_introspection_functions()
 
 history_of_users = []
 error_string = ['']
 
+
 class ExampleService:
-    
+
+
     def ping(self):
         """Simple function to respond when called to demonstrate connectivity."""
         return True
@@ -42,17 +42,18 @@ class ExampleService:
         Returns a tuple with string representation of the value, 
         the name of the type, and the value itself.
         """
-        return (str(arg), str(type(arg)), arg)
+        return str(arg), str(type(arg)), arg
 
     def raises_exception(self, msg):
-        "Always raises a RuntimeError with the message passed in"
+        #Always raises a RuntimeError with the message passed in
         raise RuntimeError(msg)
 
     def send_back_binary(self, bin):
-        "Accepts single Binary argument, unpacks and repacks it to return it"
+        #Accepts single Binary argument, unpacks and repacks it to return it
         data = bin.data
         response = Binary(data)
         return response
+
 
 def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
     return ''.join(random.choice(chars) for _ in range(size))
@@ -70,27 +71,27 @@ def enter_function(id, location_id):
     user_iocount = 0
     for block in BList:
         for action in block['actions']:
-            if (action['name'] == 'CreateUser' and action['id'] == id ):
+            if action['name'] == 'CreateUser' and action['id'] == id:
                 user_found = True
-            if (action['name'] == 'CreateLocation' and action['location_id'] == location_id):
+            if action['name'] == 'CreateLocation' and action['location_id'] == location_id:
                 location_found = True
-    if (user_found == True and location_found == True ):
+    if user_found == True and location_found == True:
         for block in BList:
             for action in block['actions']:
-                if (action['name'] == 'Enter' and action['id'] == id ):
+                if action['name'] == 'Enter' and action['id'] == id :
                     user_iocount+=1
-                if (action['name'] == 'Exit' and action['id'] == id ):
+                if action['name'] == 'Exit' and action['id'] == id:
                     user_iocount-=1
-        if (user_iocount == 0):
+        if user_iocount == 0:
             x = {}
             x['prev_hash'] = BList[-1]['hash']
-            x['actions'] = [{'name':'Enter', 'id':id, 'location_id':locaion_id}]
+            x['actions'] = [{'name':'Enter', 'id':id, 'location_id':location_id}]
             addBlock(x)
             return True
     else:
-        if (user_found == False):
+        if user_found == False:
             error_string.append('Enter fail: User not found.')
-        if (location_found == False):
+        if location_found == False:
             error_string.append('Enter fail: Location not found.')
         return False
 
@@ -102,19 +103,19 @@ def exit_function(id):
     user_iocount = 0
     for block in BList:
         for action in block['actions']:
-            if (action['name'] == 'CreateUser' and action['id'] == id ):
+            if action['name'] == 'CreateUser' and action['id'] == id:
                 user_found = True
-    if (user_found == False):
+    if user_found == False:
         error_string.append('Exit fail: User not found.')
         return False
     else:
         for block in BList:
             for action in block['actions']:
-                if (action['name'] == 'Enter' and action['id'] == id ):
+                if action['name'] == 'Enter' and action['id'] == id:
                     user_iocount+=1
-                if (action['name'] == 'Exit' and action['id'] == id ):
+                if action['name'] == 'Exit' and action['id'] == id:
                     user_iocount-=1
-        if (user_iocount == 1):
+        if user_iocount == 1:
             x = {}
             x['prev_hash'] = BList[-1]['hash']
             x['actions'] = [{'name':'Exit', 'id':id}]
@@ -130,16 +131,16 @@ def checkAdminRights(admin_id, BList):
     admin_updowncount = 0
     for block in BList:
         for action in block['actions']:
-            if (action['name'] == 'CreateUser' and action['id'] == admin_id):
+            if action['name'] == 'CreateUser' and action['id'] == admin_id:
                 user_found = True
-    if (user_found == True):
+    if user_found == True:
         for block in BList:
             for action in block['actions']:
-                if (action['name'] == 'UpgradeUser' and action['id'] == admin_id):
+                if action['name'] == 'UpgradeUser' and action['id'] == admin_id:
                     admin_updowncount+=1
-                if (action['name'] == 'DowngradeUser' and action['id'] == admin_id):
+                if action['name'] == 'DowngradeUser' and action['id'] == admin_id:
                     admin_updowncount-=1
-        if (admin_updowncount == 1):
+        if admin_updowncount == 1:
             admin_found = True
             return 0
         else:
@@ -154,7 +155,7 @@ def getLocation_function(admin_id, id, at):
     BCList = GetChainAt(at)
     BList = GetChain()
     admin_found = checkAdminRights(admin_id, BList)
-    if (admin_found != 0):
+    if admin_found != 0:
         return admin_found
 
     user_found = False
@@ -162,37 +163,38 @@ def getLocation_function(admin_id, id, at):
 
     for block in BCList:
         for action in block['actions']:
-            if (action['name'] == 'CreateUser' and action['id'] == id and action['created_at'] <= at):
+            if action['name'] == 'CreateUser' and action['id'] == id and action['created_at'] <= at:
                 user_found = True
-    if (user_found == True):
+    if user_found == True:
         for block in BCList:
             for action in block['actions']:
-                if (action['name'] == 'Enter' and action['id'] == id and action['created_at'] <= at):
+                if action['name'] == 'Enter' and action['id'] == id and action['created_at'] <= at:
                     loc_id = action['location_id']
-                if (actiom['name'] == 'Exit' and action['id'] == id and action['created_at'] <= at):
+                if action['name'] == 'Exit' and action['id'] == id and action['created_at'] <= at:
                     loc_id = 0
     else:
         error_string.append('Location identification fail: There is no such user.')
         return -1
-    return loc_id #if user is not at any location return 0
+    return loc_id
+    #if user is not at any location return 0
 
 server.register_function(getLocation_function, 'Exit')
 
 def createUser_function(admin_id):
     BList = GetChain()
     ifadmin = checkAdminRights(admin_id, BList)
-    if (ifadmin == 0):
+    if ifadmin == 0:
         user_found = True
-        while(user_found == True):
+        while user_found == True:
             user_found = False
             id = id_generator(20)
-            for block in BCList:
+            for block in BList:
                 for action in block['actions']:
-                    if (action['name'] == 'CreateUser' and action['id'] == id):
+                    if action['name'] == 'CreateUser' and action['id'] == id:
                         user_found = True
         x = {}
         x['prev_hash'] = BList[-1]['hash']
-        x['actions'] = [{'name':'CreateUser', 'id':id}]
+        x['actions'] = [{'name': 'CreateUser', 'id': id}]
         addBlock(x)
         return id
     else:
@@ -203,21 +205,22 @@ server.register_function(createUser_function, 'createUser')
 def upgradeUser_function(admin_id, id):
     BList = GetChain()
     ifadmin = checkAdminRights(admin_id, BList)
-    if (ifadmin == 0):
+    user_updowncount = 0
+    if ifadmin == 0:
         user_found = False
         for block in BList:
             for action in block['actions']:
-                if (action['name'] == 'CreateUser' and action['id'] == id):
+                if action['name'] == 'CreateUser' and action['id'] == id:
                     user_found = True
-        if (user_found == True):
+        if user_found == True:
             user_updowncount = 0
             for block in BList:
                 for action in block['actions']:
-                    if (action['name'] == 'UpgradeUser' and action['id'] == id):
-                        admin_updowncount+=1
-                    if (action['name'] == 'DowngradeUser' and action['id'] == id):
-                        admin_updowncount-=1
-            if (user_updowncount == 1):
+                    if action['name'] == 'UpgradeUser' and action['id'] == id:
+                        user_updowncount+=1
+                    if action['name'] == 'DowngradeUser' and action['id'] == id:
+                        user_updowncount-=1
+            if user_updowncount == 1:
                 error_string.append('User upgrade fail: The user has already been upgraded.')
                 return False
             else:
@@ -238,21 +241,21 @@ server.register_function(upgradeUser_function, 'upgradeUser')
 def downgradeUser_function(admin_id, id):
     BList = GetChain()
     ifadmin = checkAdminRights(admin_id, BList)
-    if (ifadmin == 0):
+    if ifadmin == 0:
         user_found = False
         for block in BList:
             for action in block['actions']:
-                if (action['name'] == 'CreateUser' and action['id'] == id):
+                if action['name'] == 'CreateUser' and action['id'] == id:
                     user_found = True
-        if (user_found == True):
+        if user_found == True:
             user_updowncount = 0
             for block in BList:
                 for action in block['actions']:
-                    if (action['name'] == 'UpgradeUser' and action['id'] == id):
-                        admin_updowncount+=1
-                    if (action['name'] == 'DowngradeUser' and action['id'] == id):
-                        admin_updowncount-=1
-            if (user_updowncount == 0):
+                    if action['name'] == 'UpgradeUser' and action['id'] == id:
+                        user_updowncount+=1
+                    if action['name'] == 'DowngradeUser' and action['id'] == id:
+                        user_updowncount-=1
+            if user_updowncount == 0:
                 error_string.append('User downgrade fail: The user has already been downgraded.')
                 return False
             else:
@@ -277,7 +280,7 @@ def createLocation_function(admin_id):
     if (ifadmin == 0):
         for block in BList:
             for action in block['actions']:
-                if (action['name'] == 'CreateLocation'):
+                if action['name'] == 'CreateLocation':
                     prev_loc_id = action['id']
         x = {}
         x['prev_hash'] = BList[-1]['hash']
@@ -289,17 +292,18 @@ def createLocation_function(admin_id):
 
 server.register_function(createLocation_function, 'createLocation')
 
+
 def getUsers_function(admin_id, location_id, at):
     BCList = GetChainAt(at)
     BList = GetChain()
     UList = []
     ifadmin = checkAdminRights(admin_id, BList)
-    if (ifadmin == 0):
+    if ifadmin == 0:
         for block in BCList:
             for action in block['actions']:
-                if (action['name'] == 'Enter' and action['location_id'] == location_id and action['created_at'] < at):
+                if action['name'] == 'Enter' and action['location_id'] == location_id and action['created_at'] < at:
                     UList.append(action['id'])
-                if (action['name'] == 'Exit' and action['location_id'] == location_id and action['created_at'] < at):
+                if action['name'] == 'Exit' and action['location_id'] == location_id and action['created_at'] < at:
                     UList.remove(action['id'])
         return UList
     else:
