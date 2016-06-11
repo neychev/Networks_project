@@ -73,7 +73,7 @@ def enter_function(id, location_id):
         for action in block['actions']:
             if action['name'] == 'CreateUser' and action['id'] == id:
                 user_found = True
-            if action['name'] == 'CreateLocation' and action['location_id'] == location_id:
+            if action['name'] == 'CreateLocation' and action['id'] == location_id:
                 location_found = True
     if user_found == True and location_found == True:
         for block in BList:
