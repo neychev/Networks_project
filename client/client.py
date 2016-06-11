@@ -23,7 +23,7 @@ while not connection_status:
     else:
         time.sleep(2)
 
-print 'Connected to server. Server time:', server.now()
+print 'Connected to server. Server time:', str(server.now())
 
 
 while True:
@@ -31,7 +31,7 @@ while True:
     cl = command.split(' ')
 
     if cl[0] == 'getDiagnostics':
-        print server.getDiagnostis()
+        print server.getDiagnostics()
 
     if cl[0] == 'Enter':
         if len(cl) == 3:
