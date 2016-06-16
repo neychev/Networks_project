@@ -27,7 +27,7 @@ class DbManager:
     def get_chain_by_table_name(self, table_name):
         blocks = []
 
-        query = "SELECT prev_hash, hash, actions, created_at FROM %s" % table_name
+        query = "SELECT prev_hash, hash, actions, created_at FROM %s ORDER BY created_at" % table_name
         rows = self.db_conn.execute(query)
         for row in rows:
             actions = json.loads(row[2])
@@ -47,9 +47,12 @@ class DbManager:
 
         return self.get_chain_by_table_name(table_name)
 
-    def archive_current_chain(self, started_at):
+    def archive_current_chain(self, first_block):
         c = self.db_conn.cursor()
 
+        query = "SELECT created_at FROM current_chain WHERE prev_hash=(SELECT hash FROM current_chain WHERE prev_hash = '')"
+        started_at = c.fetchone(query)[0]
+        
         chain_id = c.fetchone("SELECT id FROM archived_chain_info ORDER BY id DESC")[0]
         info = (chain_id, started_at, datetime.now())
 
@@ -58,6 +61,7 @@ class DbManager:
 
         self.db_conn.commit()
         self.create_table_current_chain
+        self.add_block(first_block)
 
     def create_schema(self):
         self.create_table_current_chain()
