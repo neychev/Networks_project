@@ -178,7 +178,7 @@ def getLocation_function(admin_id, id, at):
                     loc_id = 0
     else:
         error_string.append('Location identification fail: There is no such user.')
-        return -1
+        return -3
     return loc_id
     #if user is not at any location return 0
 
@@ -236,7 +236,6 @@ def upgradeUser_function(admin_id, id):
         else:
             error_string.append('User upgrade fail: User not found.')
             return False
-
     else:
         return False
 
