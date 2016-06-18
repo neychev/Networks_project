@@ -3,7 +3,7 @@ from datetime import datetime
 import json
 from hash import get_hash
 
-def archive_chain:
+def archive_chain():
     db_manager = DbManager("chains.db")
     chain = db_manager.get_chain()
 
