@@ -67,10 +67,12 @@ class DbManager:
         chain_id = c.execute("SELECT id FROM archived_chain_info ORDER BY id DESC").fetchone()[0] if chain_count > 0 else 1
 
         c.execute("ALTER TABLE current_chain RENAME TO chain_{}".format(chain_id))
-        c.execute("INSERT INTO archived_chain_info(id, started_at, finished_at) VALUES ({},{},{})".format(chain_id, started_at, datetime.now()))
+        
+	query = "INSERT INTO archived_chain_info(id, started_at, finished_at) VALUES (?,?,?)"
+	c.execute(query,(chain_id, started_at, datetime.now()))
 
         self.db_conn.commit()
-        self.create_table_current_chain
+        self.create_table_current_chain()
         self.add_block(first_block)
 
     def create_schema(self):
