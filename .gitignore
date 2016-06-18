@@ -1,3 +1,4 @@
 .idea/
 *.pyc
-/internal_server/chains.db
+*.db
+log*
