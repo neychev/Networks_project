@@ -33,7 +33,7 @@ while True:
     if cl[0] == 'getDiagnostics':
         print server.getDiagnostics()
 
-    if cl[0] == 'Enter':
+    if cl[0] == 'enter':
         if len(cl) == 3:
             result = server.Enter(cl[1], int(cl[2]))
             print 'User '+str(cl[1])+' entered location '+str(cl[2])+':', result
@@ -42,7 +42,7 @@ while True:
         else:
             err_num_args(3)
 
-    if cl[0] == 'Exit':
+    if cl[0] == 'exit':
         if len(cl) == 2:
             result = server.Exit(cl[1])
             print 'User '+str(cl[1])+' left location '+str(cl[2])+': ', result
@@ -108,6 +108,14 @@ while True:
             server.getUsers(cl[1], cl[2], time_at)
         else:
             err_num_args(3, True)
+
+    if cl[0] == 'getAllUsers':
+        if len(cl) == 2:
+            users = server.getAllUsers(cl[1])
+            users_str = '\n'.join(reduce(lambda x, key:x + [key + ' - ' + ('admin' if users[key] else 'user')], users, []))
+            print users_str if len(users) > 0 else errmsg
+        else:
+            err_num_args(2)
 
     if command == 'quit':
         print 'Exiting terminal'

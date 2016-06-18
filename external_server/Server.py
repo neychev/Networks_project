@@ -314,6 +314,23 @@ def getUsers_function(admin_id, location_id, at):
         return ifadmin
 server.register_function(getUsers_function, 'getUsers')
 
+
+def getAllUsers_function(admin_id):
+    BList = GetChain()
+    UDict = {}
+    ifadmin = checkAdminRights(admin_id, BList)
+    if ifadmin == 0:
+        for block in BList:
+            for action in block['actions']:
+                if action['name'] == 'CreateUser' or action['name'] == 'DowngradeUser':
+                    UDict[action['id']] = False
+                if action['name'] == 'UpgradeUser':
+                    UDict[action['id']] = True
+        return UDict
+    else:
+        return ifadmin
+server.register_function(getAllUsers_function, 'getAllUsers')
+
 server.register_instance(ExampleService())
 
 
