@@ -92,11 +92,11 @@ def archive_chain():
             elif action['name'] == "CreateLocation":
                 fb_actions.append(action)
             elif action['name'] == "UpgradeUser":
-                admins.append(action['admin_id'])
+                admins.append(action['id'])
             elif action['name'] == "DowngradeUser":
-                admins.remove(action['admin_id'])
+                admins.remove(action['id'])
     for admin_id in admins:
-        fb_actions.append({'name': 'UpgradeUser', 'admin_id': admin_id})
+        fb_actions.append({'name': 'UpgradeUser', 'id': admin_id})
 
     for user_id in entered_users:
         fb_actions.append({'name': 'Enter', 'id': user_id, 'location_id': user_locations[user_id]})
