@@ -1,4 +1,4 @@
-from sqlite3 import connect
+from sqlite3 import connect, PARSE_DECLTYPES
 from datetime import datetime
 import json
 import os
@@ -15,7 +15,7 @@ class DbManager:
     def __init__(self, db_name):
         empty = not os.path.isfile(db_name)
         self.db_name = db_name
-        self.db_conn = connect(db_name)
+        self.db_conn = connect(db_name, detect_types=PARSE_DECLTYPES)
 
         if empty:
             b = {'prev_hash': '', 'created_at': datetime.now(), 'actions': [{'name': 'CreateUser', 'id': '1'}, {'name': 'UpgradeUser', 'id': '1'}]}
@@ -38,7 +38,7 @@ class DbManager:
         blocks = []
 
         query = "SELECT prev_hash, hash, actions, created_at FROM %s ORDER BY created_at" % table_name
-        rows = self.db_conn.execute(query)
+        rows = self.db_conn.execute(query).fetchall()
         for row in rows:
             actions = json.loads(row[2])
             blocks.append({'prev_hash': row[0], 'hash': row[1], 'actions': actions, 'created_at': row[3]})
