@@ -5,10 +5,8 @@ from datetime import datetime
 errmsg = 'Error occurred. Get additional information by calling "getDiagnostics"'
 
 def err_num_args(num, time_flag = False):
-    msg = '.'
-    if time_flag:
-        msg = 'with time formatted %d %m %Y %I:%M:%S'
-    print 'Wrong number of arguments! Need '+str(num)+' arguments' + msg
+    msg = 'with time formatted %d %m %Y %I:%M:%S' if time_flag else '.'
+    print 'Wrong number of arguments! Need '+str(num - 1)+' arguments' + msg
     return
 
 "connecting to server"
@@ -33,7 +31,7 @@ while True:
     if cl[0] == 'getDiagnostics':
         print server.getDiagnostics()
 
-    if cl[0] == 'enter':
+    elif cl[0] == 'enter':
         if len(cl) == 3:
             result = server.Enter(cl[1], int(cl[2]))
             print 'User '+str(cl[1])+' entered location '+str(cl[2])+':', result
@@ -42,7 +40,7 @@ while True:
         else:
             err_num_args(3)
 
-    if cl[0] == 'exit':
+    elif cl[0] == 'exit':
         if len(cl) == 2:
             result = server.Exit(cl[1])
             print 'User '+str(cl[1])+' left location '+str(cl[2])+': ', result
@@ -51,7 +49,7 @@ while True:
         else:
             err_num_args(2)
 
-    if cl[0] == 'getLocation':
+    elif cl[0] == 'getLocation':
         time_str = ' '.join(cl[3:])
         if len(cl) > 5:
             time_at = datetime.strptime(time_str, '%d %m %Y %I:%M:%S')
@@ -63,7 +61,7 @@ while True:
         else:
             err_num_args(3, True)
 
-    if cl[0] == 'createUser':
+    elif cl[0] == 'createUser':
         if len(cl) == 2:
             created_user_id = server.createUser(cl[1])
             if created_user_id > 0:
@@ -73,7 +71,7 @@ while True:
         else:
             err_num_args(2)
 
-    if cl[0] == 'upgradeUser':
+    elif cl[0] == 'upgradeUser':
         if len(cl) == 3:
             result = server.upgradeUser(cl[1], cl[2])
             print 'Upgrade user '+str(cl[1])+' :', result
@@ -82,7 +80,7 @@ while True:
         else:
             err_num_args(3)
 
-    if cl[0] == 'downgradeUser':
+    elif cl[0] == 'downgradeUser':
         if len(cl) == 3:
             result = server.downgradeUser(cl[1], cl[2])
             print 'Downgrade user '+str(cl[1])+' :', result
@@ -91,7 +89,7 @@ while True:
         else:
             err_num_args(3)
 
-    if cl[0] == 'createLocation':
+    elif cl[0] == 'createLocation':
         if len(cl) == 2:
             created_location_id = server.createLocation(cl[1])
             if created_location_id > 0:
@@ -101,7 +99,7 @@ while True:
         else:
             err_num_args(2)
 
-    if cl[0] == 'getUsers':
+    elif cl[0] == 'getUsers':
         time_str = ' '.join(cl[3:])
         if len(cl) > 5:
             time_at = datetime.strptime(time_str, '%d %m %Y %I:%M:%S')
@@ -109,7 +107,7 @@ while True:
         else:
             err_num_args(3, True)
 
-    if cl[0] == 'getAllUsers':
+    elif cl[0] == 'getAllUsers':
         if len(cl) == 2:
             users = server.getAllUsers(cl[1])
             users_str = '\n'.join(reduce(lambda x, key:x + [key + ' - ' + ('admin' if users[key] else 'user')], users, []))
@@ -117,6 +115,8 @@ while True:
         else:
             err_num_args(2)
 
-    if command == 'quit':
+    elif command == 'quit':
         print 'Exiting terminal'
         break
+    else:
+        print "{} - there is no such command".format(cl[0])
