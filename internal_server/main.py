@@ -71,10 +71,6 @@ def get_diagnostics_function():
 
 server.register_function(get_diagnostics_function, 'getDiagnostics')
 
-def get_hash(block):
-    info = block['actions'] + str(block['created_at']) + block['prev_hash']
-    return sha224(info).hexdigest()
-
 def archive_chain():
     chain = db_manager.get_chain()
 

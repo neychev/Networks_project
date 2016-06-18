@@ -13,7 +13,7 @@ def err_num_args(num, time_flag = False):
 
 "connecting to server"
 connection_status = False
-server = xmlrpclib.ServerProxy('http://192.168.1.103:8000')
+server = xmlrpclib.ServerProxy('http://127.0.0.1:8080')
 
 while not connection_status:
     connection_status = server.ping()
@@ -35,7 +35,7 @@ while True:
 
     if cl[0] == 'Enter':
         if len(cl) == 3:
-            result = server.Enter(cl[1], cl[2])
+            result = server.Enter(cl[1], int(cl[2]))
             print 'User '+str(cl[1])+' entered location '+str(cl[2])+':', result
             if not result:
                 print errmsg

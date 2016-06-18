@@ -18,7 +18,7 @@ class DbManager:
         self.db_conn = connect(db_name)
 
         if empty:
-            b = {'prev_hash': '', 'created_at': datetime.now(), 'actions': [{'name': 'createUser', 'id': '1'}, {'name': 'upgradeUser', 'admin_id': '1'}]}
+            b = {'prev_hash': '', 'created_at': datetime.now(), 'actions': [{'name': 'CreateUser', 'id': '1'}, {'name': 'UpgradeUser', 'admin_id': '1'}]}
             b['actions'] = json.dumps(b['actions'])
             b['hash'] = hash.get_hash(b)
             self.create_schema()
