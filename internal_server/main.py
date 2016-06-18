@@ -2,8 +2,8 @@ from SimpleXMLRPCServer import SimpleXMLRPCServer
 from SimpleXMLRPCServer import SimpleXMLRPCRequestHandler
 from DbManager import DbManager
 from datetime import datetime
-from hashlib import sha224
 import json
+from hash import get_hash
 
 current_ip = None
 errors = {}

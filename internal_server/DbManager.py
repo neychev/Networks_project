@@ -1,6 +1,8 @@
 from sqlite3 import connect
 from datetime import datetime
 import json
+import os
+import hash
 
 class DbManager:
 
@@ -11,8 +13,16 @@ class DbManager:
     """
 
     def __init__(self, db_name):
+        empty = not os.path.isfile(db_name)
         self.db_name = db_name
         self.db_conn = connect(db_name)
+
+        if empty:
+            b = {'prev_hash': '', 'created_at': datetime.now(), 'actions': [{'name': 'addUser', 'id': '1'}, {'name': 'upgradeUser', 'admin_id': 1}]}
+            b['actions'] = json.dumps(b['actions'])
+            b['hash'] = hash.get_hash(b)
+            self.create_schema()
+            self.add_block(b)
 
     def close(self):
         self.db_conn.close()
