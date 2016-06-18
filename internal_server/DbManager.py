@@ -78,11 +78,11 @@ class DbManager:
         self.create_table_archived_chain_info()
 
     def create_table_current_chain(self):
-        query = 'CREATE TABLE current_chain(prev_hash CHAR(128), hash CHAR(128), actions TEXT, created_at TEXT)'
+        query = 'CREATE TABLE current_chain(prev_hash CHAR(128), hash CHAR(128), actions TEXT, created_at TIMESTAMP)'
         self.send_and_commit(query)
 
     def create_table_archived_chain_info(self):
-        query = 'CREATE TABLE archived_chain_info(id INT, started_at TEXT, finished_at TEXT)'
+        query = 'CREATE TABLE archived_chain_info(id INT, started_at TIMESTAMP, finished_at TIMESTAMP)'
         self.send_and_commit(query)
 
     def drop_schema(self):

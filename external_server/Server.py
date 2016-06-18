@@ -167,14 +167,14 @@ def getLocation_function(admin_id, id, at):
 
     for block in BCList:
         for action in block['actions']:
-            if action['name'] == 'CreateUser' and action['id'] == id and action['created_at'] <= at:
+            if action['name'] == 'CreateUser' and action['id'] == id and block['created_at'] <= at:
                 user_found = True
     if user_found == True:
         for block in BCList:
             for action in block['actions']:
-                if action['name'] == 'Enter' and action['id'] == id and action['created_at'] <= at:
+                if action['name'] == 'Enter' and action['id'] == id and block['created_at'] <= at:
                     loc_id = action['location_id']
-                if action['name'] == 'Exit' and action['id'] == id and action['created_at'] <= at:
+                if action['name'] == 'Exit' and action['id'] == id and block['created_at'] <= at:
                     loc_id = 0
     else:
         error_string.append('Location identification fail: There is no such user.')
