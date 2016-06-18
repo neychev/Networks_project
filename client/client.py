@@ -43,7 +43,7 @@ while True:
     elif cl[0] == 'exit':
         if len(cl) == 2:
             result = server.Exit(cl[1])
-            print 'User '+str(cl[1])+' left location '+str(cl[2])+': ', result
+            print 'User '+str(cl[1])+' has left: ', result
             if not result:
                 print errmsg
         else:
