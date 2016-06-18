@@ -60,9 +60,9 @@ class DbManager:
         c = self.db_conn.cursor()
 
         query = "SELECT created_at FROM current_chain WHERE prev_hash=(SELECT hash FROM current_chain WHERE prev_hash = '')"
-        started_at = c.fetchone(query)[0]
+        started_at = c.execute(query).fetchone()[0]
         
-        chain_id = c.fetchone("SELECT id FROM archived_chain_info ORDER BY id DESC")[0]
+        chain_id = c.execute("SELECT id FROM archived_chain_info ORDER BY id DESC").fetchone()[0]
         info = (chain_id, started_at, datetime.now())
 
         c.execute("ALTER TABLE current_chain RENAME TO ?", "chain_%d" % chain_id)
