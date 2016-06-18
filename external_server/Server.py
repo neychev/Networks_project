@@ -6,7 +6,7 @@ import string
 import random
 
 
-inner_server = xmlrpclib.ServerProxy('http://192.168.1.106:8000')
+inner_server = xmlrpclib.ServerProxy('http://shunt.ga:8000')
 
 def GetChain():
     return inner_server.getChain()
@@ -17,7 +17,7 @@ def GetChainAt(at):
 def addBlock(x):
     return inner_server.addBlock(x)
 
-server = SimpleXMLRPCServer(("", 8000), logRequests=True, allow_none=True)
+server = SimpleXMLRPCServer(("", 8080), logRequests=True, allow_none=True)
 server.register_introspection_functions()
 
 history_of_users = []
@@ -139,9 +139,9 @@ def checkAdminRights(admin_id, BList):
     if user_found == True:
         for block in BList:
             for action in block['actions']:
-                if action['name'] == 'UpgradeUser' and action['admin_id'] == admin_id:
+                if action['name'] == 'UpgradeUser' and action['id'] == admin_id:
                     admin_updowncount+=1
-                if action['name'] == 'DowngradeUser' and action['admin_id'] == admin_id:
+                if action['name'] == 'DowngradeUser' and action['id'] == admin_id:
                     admin_updowncount-=1
         if admin_updowncount == 1:
             admin_found = True
