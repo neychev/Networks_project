@@ -2,7 +2,6 @@ from SimpleXMLRPCServer import SimpleXMLRPCServer
 from SimpleXMLRPCServer import SimpleXMLRPCRequestHandler
 from DbManager import DbManager
 from datetime import datetime
-import json
 from hash import get_hash
 
 current_ip = None
@@ -50,7 +49,6 @@ def add_block_function(block):
         return False
 
     block['created_at'] = datetime.now()
-    block['actions'] = json.dumps(block['actions'])
     block['hash'] = get_hash(block)
 
     try:

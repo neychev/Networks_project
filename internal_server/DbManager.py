@@ -19,7 +19,6 @@ class DbManager:
 
         if empty:
             b = {'prev_hash': '', 'created_at': datetime.now(), 'actions': [{'name': 'CreateUser', 'id': '1'}, {'name': 'UpgradeUser', 'id': '1'}]}
-            b['actions'] = json.dumps(b['actions'])
             b['hash'] = hash.get_hash(b)
             self.create_schema()
             self.add_block(b)
@@ -28,7 +27,7 @@ class DbManager:
         self.db_conn.close()
 
     def add_block(self, block):
-        record = (block['prev_hash'], block['hash'], block['actions'], block['created_at'])
+        record = (block['prev_hash'], block['hash'], json.dumps(block['actions']), block['created_at'])
         
         c = self.db_conn.cursor()
         c.execute('INSERT INTO current_chain(prev_hash, hash, actions, created_at) VALUES (?,?,?,?)', record)
